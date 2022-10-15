@@ -10,21 +10,21 @@
 
 // Put your code here.
 
-@R0
-D = M
+@255
+D = A
 @n
 M = D			// n = RAM[0]
 
+(CHECK_KEY_PRESSED)
+//Reset
+@i
+M=1         // Set i = 0
 @SCREEN
 D = A
 @address
 M = D			// address = 16384 (base address of the Hack screen)
 
-@i
-M=0             // Set i = 0
-
-
-(CHECK_KEY_PRESSED)
+//Check the key 
 @KBD 
 D=M 
 @BLACKEN 
@@ -49,22 +49,22 @@ M=M+1
 0;JMP 
 
 
-//go back to the loop 
-@CHECK_KEY_PRESSED
-0;JMP
-
-
-
 (WHITEN)
 //whiten the screen
-@R0 
-D=A
-@R0 
-M=D
+@i 
+D=M 
+@n 
+D=D-M
 
-// go back to the loop
 @CHECK_KEY_PRESSED
-0;JMP
+D;JGT 
+
+// whiten 
+@i 
+M=M+1  
+
+@WHITEN_ROW
+0;JMP 
 
 
 
@@ -93,4 +93,32 @@ M=M+1
 M=M+1
 
 @BR_LOOP
+0;JMP
+
+
+(WHITEN_ROW)
+@R1
+D=A
+@iwr //internal blacken row
+M=D 
+
+(WR_LOOP)
+@iwr
+D=M
+@32
+D=D-A
+@WHITEN
+D;JGT 
+
+@address 
+A=M 
+M=0  // Set the value at address[M] to -1 (16 bit 1)
+
+@address 
+M=M+1 
+
+@iwr 
+M=M+1
+
+@WR_LOOP
 0;JMP
